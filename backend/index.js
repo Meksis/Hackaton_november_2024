@@ -135,6 +135,48 @@ app.get(`/${root}/get_pierce/by_name`, async (req, res) => {
   }
 });
 
+app.get(`/${root}/get_data/pierce/`, async (req, res) => {
+  try {
+    const params = req.query;
+    const pierce_id = params.pierce_id;
+    const user_time = params.userTime;
+    // const user_timezone = params.timeZone;
+
+    // console.log(params);
+
+
+    // console.log(params);
+    // res.json(params);
+    const taxi_time_arrive = 5;
+    const taxi_time_drive= 10;
+    const pierce_arrive_delta = 20;
+    const result = await pool.query(`SELECT * FROM "Маршруты" where "ID"=${pierce_id} AND $1 BETWEEN "Причаливание" AND "Отход";`, [user_time]);
+    // user_time = '10:00:00+3';
+    // const result = await pool.query(`SELECT * FROM "Маршруты" where "ID"=${pierce_id} AND $1 BETWEEN "Причаливание" +${taxi_time_arrive} AND "Отход";`, [user_time]);
+//     const result = await pool.query(`
+//       SELECT * 
+//       FROM "Маршруты" 
+//       WHERE "ID" = ${pierce_id} 
+//         AND '${user_time}' + '00:${taxi_time_arrive<10?'0'+taxi_time_arrive.toString():taxi_time_arrive}:00+3' BETWEEN "Причаливание" AND "Отход"
+// ;
+//     `);
+    console.log(params, result.rows);
+
+    if (result.rows.length) {
+      res.json(result.rows);
+    }
+
+    else {
+      res.json(`Причал будет свободен`);
+    }
+
+  } 
+  
+  catch (err) {
+    res.status(500).send(`Database query failed: \n${err}`);
+  }
+});
+
 
 
 
